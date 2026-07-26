@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MoVoTune — media player for Windows</title>
+<meta name="description" content="MoVoTune is a Windows media player for video, music, subtitles and lyrics — with visualizers, a 10-band EQ, DLNA streaming and AI stem separation. Free Basic edition on the Microsoft Store.">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="img/logo.png" type="image/png" sizes="256x256">
+<link rel="apple-touch-icon" href="img/logo.png">
+<meta property="og:title" content="MoVoTune — media player for Windows">
+<meta property="og:description" content="Video, music, subtitles, lyrics, visualizers, DLNA and AI stem separation. Free on the Microsoft Store.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://movotune.github.io/">
+<meta property="og:image" content="https://movotune.github.io/img/radio.jpg">
+<style>
+:root{
+  --bg:#070a10;
+  --bg-2:#0c111a;
+  --panel:#111825;
+  --line:#1e2a3d;
+  --ink:#e8eef7;
+  --muted:#8ea0b8;
+  --cyan:#2aa9f0;
+  --gold:#f0b429;
+  --radius:14px;
+  --maxw:1120px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:
+    radial-gradient(900px 500px at 78% -8%, rgba(42,169,240,.16), transparent 60%),
+    radial-gradient(700px 420px at 8% 12%, rgba(240,180,41,.08), transparent 60%),
+    var(--bg);
+  color:var(--ink);
+  font:16px/1.65 "Segoe UI", -apple-system, system-ui, Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+a{color:var(--cyan);text-decoration:none}
+a:hover{text-decoration:underline}
+h1,h2,h3{line-height:1.2;margin:0 0 .5em}
+h2{font-size:clamp(1.5rem,3.4vw,2.1rem);letter-spacing:-.01em}
+p{margin:0 0 1em}
+.mono{font-family:"Cascadia Mono",Consolas,ui-monospace,monospace}
+
+/* ---- header ---- */
+header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(7,10,16,.82);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.nav{display:flex;align-items:center;gap:26px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.05rem;color:var(--ink)}
+.brand:hover{text-decoration:none}
+.brand img{width:28px;height:28px;display:block}
+.brand .b1{color:var(--cyan)} .brand .b2{color:var(--gold)}
+.nav nav{margin-left:auto;display:flex;gap:22px;align-items:center}
+.nav nav a{color:var(--muted);font-size:.93rem}
+.nav nav a:hover{color:var(--ink);text-decoration:none}
+.langbtn{
+  border:1px solid var(--line);background:transparent;color:var(--muted);
+  border-radius:999px;padding:5px 12px;font:600 .78rem/1 inherit;letter-spacing:.06em;
+  cursor:pointer;
+}
+.langbtn:hover{color:var(--ink);border-color:var(--cyan)}
+@media(max-width:760px){ .nav nav a[data-hide]{display:none} }
+
+/* ---- hero ---- */
+.hero{padding:76px 0 40px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding-top:48px;gap:30px}}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font:600 .74rem/1 inherit;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold);border:1px solid rgba(240,180,41,.3);
+  background:rgba(240,180,41,.07);border-radius:999px;padding:7px 13px;margin-bottom:20px;
+}
+.hero h1{font-size:clamp(2.2rem,5.4vw,3.4rem);letter-spacing:-.025em;margin-bottom:.35em}
+.hero h1 .accent{background:linear-gradient(100deg,var(--cyan),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:1.12rem;color:#b9c7da;max-width:34em}
+.cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:28px;align-items:center}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:13px 22px;border-radius:10px;font-weight:600;font-size:.98rem;
+  border:1px solid transparent;
+}
+.btn:hover{text-decoration:none}
+.btn-primary{background:linear-gradient(180deg,#2fb3f7,#1481c4);color:#02121e;box-shadow:0 8px 24px -10px rgba(42,169,240,.8)}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-ghost{border-color:var(--line);color:var(--ink);background:rgba(255,255,255,.02)}
+.btn-ghost:hover{border-color:var(--cyan)}
+.cta small{color:var(--muted);font-size:.85rem}
+.shot{
+  border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+  background:var(--panel);box-shadow:0 30px 70px -30px rgba(0,0,0,.9);
+}
+.shot img{display:block;width:100%;height:auto}
+
+/* ---- sections ---- */
+section{padding:64px 0;border-top:1px solid var(--line)}
+.section-head{max-width:44em;margin-bottom:38px}
+.section-head p{color:var(--muted);margin:0}
+
+.grid{display:grid;gap:18px;grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+.card{
+  background:linear-gradient(180deg,var(--panel),var(--bg-2));
+  border:1px solid var(--line);border-radius:var(--radius);padding:22px;
+}
+.card h3{font-size:1.02rem;margin-bottom:.4em}
+.card p{color:var(--muted);font-size:.93rem;margin:0}
+.card .ico{font-size:1.4rem;display:block;margin-bottom:10px}
+.pro-tag{
+  display:inline-block;margin-left:8px;vertical-align:middle;
+  font:700 .62rem/1 inherit;letter-spacing:.1em;color:var(--gold);
+  border:1px solid rgba(240,180,41,.4);border-radius:4px;padding:3px 5px;
+}
+
+/* ---- editions ---- */
+.editions{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:820px){.editions{grid-template-columns:1fr}}
+.ed{
+  border:1px solid var(--line);border-radius:var(--radius);padding:28px;
+  background:linear-gradient(180deg,var(--panel),var(--bg-2));display:flex;flex-direction:column;
+}
+.ed.pro{border-color:rgba(240,180,41,.35);box-shadow:0 0 0 1px rgba(240,180,41,.06) inset}
+.ed h3{font-size:1.35rem;margin-bottom:.15em}
+.ed .price{color:var(--muted);font-size:.9rem;margin-bottom:18px}
+.ed ul{list-style:none;padding:0;margin:0 0 24px;font-size:.94rem}
+.ed li{padding:7px 0 7px 26px;position:relative;color:#c4d1e2;border-bottom:1px solid rgba(30,42,61,.6)}
+.ed li:last-child{border-bottom:0}
+.ed li::before{content:"›";position:absolute;left:8px;color:var(--cyan);font-weight:700}
+.ed.pro li::before{color:var(--gold)}
+.ed .foot{margin-top:auto}
+.badge-soon{
+  display:inline-block;font:700 .7rem/1 inherit;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--gold);background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.35);
+  border-radius:999px;padding:8px 14px;
+}
+
+/* ---- gallery ---- */
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+@media(max-width:820px){.gallery{grid-template-columns:1fr}}
+figure{margin:0}
+figcaption{color:var(--muted);font-size:.85rem;padding:12px 4px 0}
+
+/* ---- privacy strip ---- */
+.strip{
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:linear-gradient(120deg,rgba(42,169,240,.08),rgba(240,180,41,.05));
+  padding:30px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;
+}
+@media(max-width:760px){.strip{grid-template-columns:1fr}}
+.strip p{margin:0;color:#c4d1e2}
+
+.note{color:var(--muted);font-size:.85rem;border-left:2px solid var(--line);padding-left:14px}
+
+footer{border-top:1px solid var(--line);padding:38px 0 60px;color:var(--muted);font-size:.88rem}
+.footlinks{display:flex;flex-wrap:wrap;gap:20px;margin-bottom:16px}
+
+[lang]:not(html){display:none}
+body[data-lang="en"] [lang="en"]{display:revert}
+body[data-lang="ro"] [lang="ro"]{display:revert}
+</style>
+</head>
+<body data-lang="en">
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <img src="img/logo.png" alt="">
+      <span><span class="b1">MoVo</span><span class="b2">Tune</span></span>
+    </a>
+    <nav>
+      <a href="#features"><span lang="en">Features</span><span lang="ro">Funcții</span></a>
+      <a href="#editions"><span lang="en">Editions</span><span lang="ro">Ediții</span></a>
+      <a href="#screens" data-hide><span lang="en">Screenshots</span><span lang="ro">Capturi</span></a>
+      <a href="privacy.html" data-hide><span lang="en">Privacy</span><span lang="ro">Confidențialitate</span></a>
+      <button class="langbtn" id="langbtn" type="button">
+        <span lang="en">RO</span><span lang="ro">EN</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <div class="wrap hero">
+    <div>
+      <span class="eyebrow">
+        <span lang="en">Windows 10 &amp; 11 · Microsoft Store</span>
+        <span lang="ro">Windows 10 și 11 · Microsoft Store</span>
+      </span>
+      <h1 lang="en">One player for <span class="accent">everything</span> you watch and listen to.</h1>
+      <h1 lang="ro">Un singur player pentru <span class="accent">tot</span> ce asculți și privești.</h1>
+      <p class="lead" lang="en">
+        MoVoTune plays your films and your music with real subtitles, synced lyrics,
+        retro visualizers and a proper 10-band equalizer — then streams it all to your TV.
+        No accounts, no ads, no telemetry.
+      </p>
+      <p class="lead" lang="ro">
+        MoVoTune redă filmele și muzica ta cu subtitrări reale, versuri sincronizate,
+        vizualizatoare retro și un egalizator serios cu 10 benzi — apoi trimite totul
+        către televizor. Fără conturi, fără reclame, fără telemetrie.
+      </p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://apps.microsoft.com/detail/9N26VBJVTWJ3">
+          <span lang="en">Get MoVoTune Basic — free</span>
+          <span lang="ro">Descarcă MoVoTune Basic — gratuit</span>
+        </a>
+        <a class="btn btn-ghost" href="#editions">
+          <span lang="en">Basic vs Pro</span>
+          <span lang="ro">Basic vs Pro</span>
+        </a>
+      </div>
+      <p style="margin-top:14px">
+        <small style="color:var(--muted)">
+          <span lang="en">Basic is fully offline and free. Pro adds the advanced engines and online features — coming to the Store.</span>
+          <span lang="ro">Basic funcționează complet offline și e gratuit. Pro adaugă motoarele avansate și funcțiile online — în curând în Store.</span>
+        </small>
+      </p>
+    </div>
+    <div class="shot">
+      <img src="img/radio.jpg" width="1400" height="705" alt="MoVoTune playing internet radio with the boombox visualizer skin and the media library open">
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 lang="en">Built like a real media player</h2>
+        <h2 lang="ro">Construit ca un player adevărat</h2>
+        <p lang="en">A native Windows application written in Rust — small, fast, and it starts instantly.
+          Features marked <span class="pro-tag">PRO</span> are part of the Pro edition.</p>
+        <p lang="ro">O aplicație nativă Windows scrisă în Rust — mică, rapidă și pornește instant.
+          Funcțiile marcate <span class="pro-tag">PRO</span> fac parte din ediția Pro.</p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <span class="ico">🎬</span>
+          <h3 lang="en">Video that just plays</h3>
+          <h3 lang="ro">Video care pur și simplu merge</h3>
+          <p lang="en">Multiple playback engines (Media Foundation, DirectShow, and libmpv in Pro) so odd files still open. Correct letterboxing in windowed and fullscreen mode.</p>
+          <p lang="ro">Mai multe motoare de redare (Media Foundation, DirectShow și libmpv în Pro), ca să se deschidă și fișierele dificile. Încadrare corectă în fereastră și pe ecran complet.</p>
+        </div>
+        <div class="card">
+          <span class="ico">💬</span>
+          <h3 lang="en">Subtitles done properly</h3>
+          <h3 lang="ro">Subtitrări făcute ca lumea</h3>
+          <p lang="en">Local <span class="mono">.srt</span> and <span class="mono">.ass</span> with font, size, colour and timing offset controls. Online subtitle search via OpenSubtitles.<span class="pro-tag">PRO</span></p>
+          <p lang="ro">Fișiere locale <span class="mono">.srt</span> și <span class="mono">.ass</span>, cu control pe font, dimensiune, culoare și decalaj de sincronizare. Căutare online prin OpenSubtitles.<span class="pro-tag">PRO</span></p>
+        </div>
+        <div class="card">
+          <span class="ico">🎚️</span>
+          <h3 lang="en">10-band EQ &amp; DSP</h3>
+          <h3 lang="ro">Egalizator cu 10 benzi și DSP</h3>
+          <p lang="en">A true PCM-level equalizer with preamp, applied inside the audio pipeline — not a fake slider. WASAPI exclusive bitstream passthrough.<span class="pro-tag">PRO</span></p>
+          <p lang="ro">Egalizator real la nivel PCM, cu preamplificare, aplicat în lanțul audio — nu un slider decorativ. Bitstream exclusiv WASAPI.<span class="pro-tag">PRO</span></p>
+        </div>
+        <div class="card">
+          <span class="ico">📼</span>
+          <h3 lang="en">Visualizers with character</h3>
+          <h3 lang="ro">Vizualizatoare cu personalitate</h3>
+          <p lang="en">Cassette deck, boombox, spectrum analyser and VU meters — animated skins that react to the music, plus your own logo.</p>
+          <p lang="ro">Casetofon, boombox, analizor de spectru și VU-metre — skinuri animate care reacționează la muzică, plus logo-ul tău.</p>
+        </div>
+        <div class="card">
+          <span class="ico">🎤</span>
+          <h3 lang="en">AI stem separation<span class="pro-tag">PRO</span></h3>
+          <h3 lang="ro">Separare AI pe piste<span class="pro-tag">PRO</span></h3>
+          <p lang="en">Split any track into vocals, drums, bass and other — locally, on your machine. Mute the vocals for karaoke, or export the stems.</p>
+          <p lang="ro">Împarte orice piesă în voce, tobe, bas și restul — local, pe calculatorul tău. Taci vocea pentru karaoke sau exportă pistele.</p>
+        </div>
+        <div class="card">
+          <span class="ico">📺</span>
+          <h3 lang="en">Stream to your TV<span class="pro-tag">PRO</span></h3>
+          <h3 lang="ro">Trimite pe televizor<span class="pro-tag">PRO</span></h3>
+          <p lang="en">Built-in DLNA/UPnP server shares the file at original quality, no re-encoding, with full seeking across the whole film.</p>
+          <p lang="ro">Server DLNA/UPnP integrat: partajează fișierul la calitatea originală, fără reconversie, cu derulare pe tot filmul.</p>
+        </div>
+        <div class="card">
+          <span class="ico">🎵</span>
+          <h3 lang="en">Synced lyrics<span class="pro-tag">PRO</span></h3>
+          <h3 lang="ro">Versuri sincronizate<span class="pro-tag">PRO</span></h3>
+          <p lang="en">Line-by-line lyrics from LRCLIB and Genius, matched to the track that is playing.</p>
+          <p lang="ro">Versuri rând cu rând de la LRCLIB și Genius, potrivite cu piesa care rulează.</p>
+        </div>
+        <div class="card">
+          <span class="ico">📻</span>
+          <h3 lang="en">Radio, TV &amp; library<span class="pro-tag">PRO</span></h3>
+          <h3 lang="ro">Radio, TV și bibliotecă<span class="pro-tag">PRO</span></h3>
+          <p lang="en">Media library with playlists, internet radio by country, your own M3U/IPTV lists, and film info from OMDb.</p>
+          <p lang="ro">Bibliotecă media cu playlisturi, radio online pe țări, listele tale M3U/IPTV și informații despre filme de la OMDb.</p>
+        </div>
+        <div class="card">
+          <span class="ico">🌍</span>
+          <h3 lang="en">31 languages</h3>
+          <h3 lang="ro">31 de limbi</h3>
+          <p lang="en">The whole interface is translated, Romanian and English included. Themes, fonts and Explorer integration: “Play with MoVoTune”.</p>
+          <p lang="ro">Toată interfața e tradusă, inclusiv română și engleză. Teme, fonturi și integrare în Explorer: „Play with MoVoTune”.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDITIONS -->
+  <section id="editions">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 lang="en">Two editions, one app</h2>
+        <h2 lang="ro">Două ediții, aceeași aplicație</h2>
+        <p lang="en">Start free. Basic is a complete offline player — nothing is time-limited and nothing expires.</p>
+        <p lang="ro">Începe gratuit. Basic e un player offline complet — nimic nu e limitat în timp și nimic nu expiră.</p>
+      </div>
+
+      <div class="editions">
+        <div class="ed">
+          <h3>MoVoTune Basic</h3>
+          <div class="price">
+            <span lang="en">Free · no ads · works entirely offline</span>
+            <span lang="ro">Gratuit · fără reclame · funcționează complet offline</span>
+          </div>
+          <ul>
+            <li lang="en">Local video &amp; audio playback (Media Foundation, DirectShow, Mix engine)</li>
+            <li lang="ro">Redare video și audio locală (Media Foundation, DirectShow, motorul Mix)</li>
+            <li lang="en">Local <span class="mono">.srt</span> / <span class="mono">.ass</span> subtitles with full styling controls</li>
+            <li lang="ro">Subtitrări locale <span class="mono">.srt</span> / <span class="mono">.ass</span>, complet configurabile</li>
+            <li lang="en">Playlists, tag editor, themes and fonts</li>
+            <li lang="ro">Playlisturi, editor de etichete, teme și fonturi</li>
+            <li lang="en">Cassette, spectrum, VU meter and custom-logo visualizers</li>
+            <li lang="ro">Vizualizatoare: casetă, spectru, VU-metru și logo personalizat</li>
+            <li lang="en">10-band equalizer and DSP</li>
+            <li lang="ro">Egalizator cu 10 benzi și DSP</li>
+            <li lang="en">31 interface languages · Explorer context menu</li>
+            <li lang="ro">31 de limbi în interfață · meniu contextual în Explorer</li>
+            <li lang="en"><strong>No network access at all</strong> — the Basic build declares no network capabilities</li>
+            <li lang="ro"><strong>Fără acces la rețea</strong> — ediția Basic nu declară nicio capabilitate de rețea</li>
+          </ul>
+          <div class="foot">
+            <a class="btn btn-primary" href="https://apps.microsoft.com/detail/9N26VBJVTWJ3">
+              <span lang="en">Get it from Microsoft Store</span>
+              <span lang="ro">Descarcă din Microsoft Store</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="ed pro">
+          <h3>MoVoTune Pro</h3>
+          <div class="price">
+            <span lang="en">Paid, one-time purchase · price shown on the Store listing</span>
+            <span lang="ro">Achiziție unică · prețul e afișat în pagina din Store</span>
+          </div>
+          <ul>
+            <li lang="en">Everything in Basic, plus:</li>
+            <li lang="ro">Tot ce are Basic, plus:</li>
+            <li lang="en">Advanced engines — libmpv, NovaGC, Nova3D, Nova360VR, DS Reloaded</li>
+            <li lang="ro">Motoare avansate — libmpv, NovaGC, Nova3D, Nova360VR, DS Reloaded</li>
+            <li lang="en">AI stem separation (vocals / drums / bass / other) with export</li>
+            <li lang="ro">Separare AI pe piste (voce / tobe / bas / restul), cu export</li>
+            <li lang="en">2.5D depth rendering for ordinary 2D films · 360° VR playback</li>
+            <li lang="ro">Randare 2.5D cu adâncime pentru filme 2D obișnuite · redare 360° VR</li>
+            <li lang="en">DLNA/UPnP streaming to TVs at original quality</li>
+            <li lang="ro">Streaming DLNA/UPnP către televizoare, la calitatea originală</li>
+            <li lang="en">Media library, internet radio, IPTV lists, OMDb film info</li>
+            <li lang="ro">Bibliotecă media, radio online, liste IPTV, informații OMDb</li>
+            <li lang="en">Online subtitle search, synced lyrics, waveform seekbar, Shader Hub</li>
+            <li lang="ro">Căutare online de subtitrări, versuri sincronizate, seekbar cu formă de undă, Shader Hub</li>
+          </ul>
+          <div class="foot">
+            <span class="badge-soon">
+              <span lang="en">Coming to the Microsoft Store</span>
+              <span lang="ro">În curând în Microsoft Store</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <p class="note" style="margin-top:26px">
+        <span lang="en">Note: MoVoTune does not host, curate or verify third-party TV, radio or IPTV streams.
+          Those features simply play lists you or a public directory provide, and you are responsible
+          for the legality of the sources you add.</span>
+        <span lang="ro">Notă: MoVoTune nu găzduiește, nu selectează și nu verifică fluxurile TV, radio sau IPTV ale terților.
+          Aceste funcții doar redau liste furnizate de tine sau de un director public, iar responsabilitatea
+          pentru legalitatea surselor adăugate îți aparține.</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- SCREENSHOTS -->
+  <section id="screens">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 lang="en">A look at it</h2>
+        <h2 lang="ro">Cum arată</h2>
+        <p lang="en">Screenshots from the Pro edition on Windows 11.</p>
+        <p lang="ro">Capturi din ediția Pro, pe Windows 11.</p>
+      </div>
+      <div class="gallery">
+        <figure>
+          <div class="shot"><img src="img/dlna.jpg" width="1300" height="1008" loading="lazy" alt="A film playing in a window while MoVoTune shares it over DLNA to the local network"></div>
+          <figcaption>
+            <span lang="en">DLNA sharing — the file streams to the TV at original quality, no re-encoding. (Clip: <em>Big Buck Bunny</em>, © Blender Foundation, CC BY 3.0.)</span>
+            <span lang="ro">Partajare DLNA — fișierul ajunge la televizor la calitatea originală, fără reconversie. (Clip: <em>Big Buck Bunny</em>, © Blender Foundation, CC BY 3.0.)</span>
+          </figcaption>
+        </figure>
+        <figure>
+          <div class="shot"><img src="img/stems.jpg" width="760" height="1002" loading="lazy" alt="The MoVoTune stem mixer with faders for vocals, drums, bass and other"></div>
+          <figcaption>
+            <span lang="en">The stem mixer — separate a track locally, then mute or solo each part.</span>
+            <span lang="ro">Mixerul de piste — separă o melodie local, apoi taci sau izolezi fiecare parte.</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVACY -->
+  <section id="privacy">
+    <div class="wrap">
+      <div class="strip">
+        <div>
+          <h2 style="font-size:1.4rem" lang="en">Your files stay yours</h2>
+          <h2 style="font-size:1.4rem" lang="ro">Fișierele tale rămân ale tale</h2>
+          <p lang="en">No accounts, no ads, no analytics, no telemetry. Settings live in your own Windows
+            profile. Basic never touches the network; Pro contacts a service only when you use the
+            feature that needs it, and sends only the title you are searching for.</p>
+          <p lang="ro">Fără conturi, fără reclame, fără analytics, fără telemetrie. Setările stau în profilul
+            tău Windows. Basic nu atinge deloc rețeaua; Pro contactează un serviciu doar când folosești
+            funcția respectivă și trimite doar titlul căutat.</p>
+        </div>
+        <div>
+          <a class="btn btn-ghost" href="privacy.html">
+            <span lang="en">Read the privacy policy</span>
+            <span lang="ro">Citește politica de confidențialitate</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footlinks">
+      <a href="privacy.html"><span lang="en">Privacy policy</span><span lang="ro">Politica de confidențialitate</span></a>
+      <a href="https://apps.microsoft.com/detail/9N26VBJVTWJ3"><span lang="en">MoVoTune Basic on the Store</span><span lang="ro">MoVoTune Basic în Store</span></a>
+      <a href="mailto:movotune@gmail.com"><span lang="en">Support &amp; contact</span><span lang="ro">Suport și contact</span></a>
+    </div>
+    <p style="margin:0">
+      <span lang="en">© 2026 Valentin Rizea. MoVoTune is an independent product and is not affiliated with Microsoft.
+        Windows is a trademark of Microsoft Corporation.</span>
+      <span lang="ro">© 2026 Valentin Rizea. MoVoTune este un produs independent, neafiliat cu Microsoft.
+        Windows este marcă înregistrată a Microsoft Corporation.</span>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var body = document.body;
+  var saved = null;
+  try { saved = localStorage.getItem('mvt-lang'); } catch (e) {}
+  var initial = saved || ((navigator.language || '').toLowerCase().indexOf('ro') === 0 ? 'ro' : 'en');
+  setLang(initial);
+
+  document.getElementById('langbtn').addEventListener('click', function () {
+    setLang(body.dataset.lang === 'en' ? 'ro' : 'en');
+  });
+
+  function setLang(l) {
+    body.dataset.lang = l;
+    document.documentElement.lang = l;
+    try { localStorage.setItem('mvt-lang', l); } catch (e) {}
+  }
+})();
+</script>
+</body>
+</html>
